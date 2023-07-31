@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape>
+            <corners android:radius="999dp" />
+            <solid android:color="?colorSecondaryContainer" />
+        </shape>
+    </item>
+    <item
+        android:bottom="15dp"
+        android:drawable="@drawable/no_found"
+        android:end="15dp"
+        android:start="15dp"
+        android:top="15dp">
+
+    </item>
+
+</layer-list>
