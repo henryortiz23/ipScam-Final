@@ -8,8 +8,11 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.softs.hn.ip.ipscam.R;
 import com.softs.hn.ip.ipscam.databinding.FragmentHistorialBinding;
 
 import java.util.ArrayList;
@@ -54,13 +57,12 @@ public class HistorialFragment extends Fragment implements OnItemClickListenerHi
 
     @Override
     public void onItemClick(Historial data) {
-
+        NavController navController = Navigation.findNavController(this.requireActivity(), R.id.nav_host_fragment_activity_main);
+        Bundle param = new Bundle();
+        param.putString("rec_placa", data.getPlaca());
+        navController.navigate(R.id.navigation_inicio,param);
     }
 
-    @Override
-    public void onItemClickVer(Historial data) {
-
-    }
 
     @Override
     public void onItemClickDelete(Historial data) {

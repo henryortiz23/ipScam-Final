@@ -47,4 +47,10 @@ public class HistorialRepository {
             dao.deleteAll();
         });
     }
+
+    public boolean placaExists(String placa) {
+        int count = dao.getCountByPlaca(placa);
+        return count > 0;
+    }
+
 }

@@ -13,7 +13,6 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -31,16 +30,15 @@ import com.softs.hn.ip.ipscam.databinding.FragmentInicioBinding;
 
 import java.util.Objects;
 
-public class InicioFragment extends Fragment {
-
-    private final int REQUEST_IMAGE_CAPTURE = 1;
-
+public class InicioFragment extends Fragment{
     private static final int PERMISSION_REQUEST_CAMERA = 700;
-    private static final int PERMISSION_REQUEST_IMAGES = 701;
+    private static final int PERMISSION_REQUEST_IMAGES = 800;
+
     private Bitmap imageBitmap;
     Uri fileUri;
     TextRecognizer recon = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
     private FragmentInicioBinding binding;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -54,30 +52,25 @@ public class InicioFragment extends Fragment {
         });
 
         binding.btnGaleria.setOnClickListener(v -> {
-            /*
-            if(solicitarPermisoGaleria()) {
-                scroppFoto(2);
-            }
-             */
             solicitarPermisoGaleria();
         });
         binding.txtPlaca.setFocusableInTouchMode(true);
         binding.txtPlaca.requestFocus();
 
         binding.btnBuscar.setOnClickListener(v -> {
-
             if (binding.txtPlaca.getText().toString().length() >= 7) {
-/*
-                Intent intent = new Intent(this.getContext(), MenuReconocimiento.class);
-                intent.putExtra("placa", binding.txtPlaca.getText().toString());
-                startActivity(intent);
-*/
                 comprobar(binding.txtPlaca.getText().toString());
             } else {
                 binding.txtPlaca.setError("Formato de placa invalido, debe contener 7 caracteres");
-
             }
         });
+
+
+        Bundle param = getArguments();
+        if (param != null) {
+            String paramString = param.getString("rec_placa");
+            binding.txtPlaca.setText(paramString);
+        }
 
         return root;
     }
@@ -112,7 +105,7 @@ public class InicioFragment extends Fragment {
             }
     );
 
-    private void scroppFoto(int option) {
+    public void scroppFoto(int option) {
         CropImageOptions cropImageOptions = new CropImageOptions();
         if (option == 1) {
             cropImageOptions.imageSourceIncludeCamera = true;
@@ -144,7 +137,7 @@ public class InicioFragment extends Fragment {
 
     private boolean solicitarPermisoCamara() {
         if (ContextCompat.checkSelfPermission(Objects.requireNonNull(getContext()), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this.requireActivity(), new String[]{Manifest.permission.CAMERA}, PERMISSION_REQUEST_CAMERA);
+            requestPermissions(new String[]{Manifest.permission.CAMERA}, PERMISSION_REQUEST_CAMERA);
             return false;
         } else {
             return true;
@@ -153,21 +146,38 @@ public class InicioFragment extends Fragment {
 
     private void solicitarPermisoGaleria() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+
             if (ContextCompat.checkSelfPermission(Objects.requireNonNull(getContext()), Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(Objects.requireNonNull(getActivity()), new String[]{Manifest.permission.READ_MEDIA_IMAGES}, PERMISSION_REQUEST_IMAGES);
+                requestPermissions(new String[]{Manifest.permission.READ_MEDIA_IMAGES}, PERMISSION_REQUEST_IMAGES);
+
             } else {
-                // Permiso READ_MEDIA_IMAGES ya concedido, puedes iniciar la selección de imagen
                 scroppFoto(2);
             }
         } else {
-
-
             if (ContextCompat.checkSelfPermission(Objects.requireNonNull(getContext()), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(Objects.requireNonNull(getActivity()), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST_IMAGES);
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST_IMAGES);
             } else {
                 scroppFoto(2);
             }
+        }
+    }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == PERMISSION_REQUEST_IMAGES) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                scroppFoto(2);
+            } else {
+                Toast.makeText(getContext(), "PERMISO DENEGADO", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        if (requestCode == PERMISSION_REQUEST_CAMERA) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                scroppFoto(1);
+            } else {
+                Toast.makeText(getContext(), "PERMISO DENEGADO", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -176,4 +186,5 @@ public class InicioFragment extends Fragment {
         super.onDestroyView();
         binding = null;
     }
+
 }

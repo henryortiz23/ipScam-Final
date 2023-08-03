@@ -28,4 +28,8 @@ public interface HistorialDao {
 
     @Query("select * from historial order by id")
     LiveData<List<Historial>>getHistorial();
+
+    @Query("SELECT COUNT(*) FROM historial WHERE placa = :placa")
+    int getCountByPlaca(String placa);
+
 }

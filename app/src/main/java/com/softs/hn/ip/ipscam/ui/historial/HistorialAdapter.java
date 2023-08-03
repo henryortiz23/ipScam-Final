@@ -37,6 +37,7 @@ public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.View
 
         holder.setOnClickListener(historial, manejadorEventoClick);
 
+
     }
 
     @Override
@@ -58,7 +59,7 @@ public class HistorialAdapter extends RecyclerView.Adapter<HistorialAdapter.View
         }
 
         public void setOnClickListener(Historial datosHistorial, OnItemClickListenerHistotial<Historial> listener) {
-            ////this.binding.bView.setOnClickListener(v -> listener.onItemClick(datosPedido));
+            this.itemView.setOnClickListener(v -> listener.onItemClick(datosHistorial));
             this.binding.bDelete.setOnClickListener(v -> listener.onItemClickDelete(datosHistorial));
         }
     }

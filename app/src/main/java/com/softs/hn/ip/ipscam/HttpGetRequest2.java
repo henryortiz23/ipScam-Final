@@ -1,5 +1,6 @@
 package com.softs.hn.ip.ipscam;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.softs.hn.ip.ipscam.database.HistorialDao;
 import com.softs.hn.ip.ipscam.ui.historial.Historial;
 import com.softs.hn.ip.ipscam.ui.historial.HistorialViewModel;
 
@@ -30,6 +32,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
 
@@ -88,14 +91,12 @@ public class HttpGetRequest2 extends AsyncTask<String, Void, String> {
                 if (apexItems.length() > 0) {
                     JSONObject json = apexItems.getJSONObject(0);
 
-                    //showInformacion(json);
-
 					Intent intent = new Intent(context, MenuReconocimiento.class);
 					intent.putExtra("JSON", json.toString());
 					context.startActivity(intent);
-					crear_historial(json.getString("placa"));
 
                     dialog.dismiss();
+                    crear_historial(json.getString("placa"));
 
                 } else {
                     sendDialogo("Datos no encontrados", "No se encontro el numero de placa ingresado", 3);
@@ -110,10 +111,19 @@ public class HttpGetRequest2 extends AsyncTask<String, Void, String> {
 
     private void crear_historial(String placa) {
         Historial data = new Historial(placa);
-        HistorialViewModel mHistorialViewModel;
-        mHistorialViewModel = new ViewModelProvider((ViewModelStoreOwner) context).get(HistorialViewModel.class);
+        new InsertHistorialTask().execute(data);
+    }
 
-        mHistorialViewModel.insert(data);
+    @SuppressLint("StaticFieldLeak")
+    private class InsertHistorialTask extends AsyncTask<Historial, Void, Void> {
+        @Override
+        protected Void doInBackground(Historial... historials) {
+            @SuppressLint("WrongThread") HistorialViewModel mHistorialViewModel = new ViewModelProvider((ViewModelStoreOwner) context).get(HistorialViewModel.class);
+            if (!mHistorialViewModel.placaExists(historials[0].getPlaca())) {
+                mHistorialViewModel.insert(historials[0]);
+            }
+            return null;
+        }
     }
 
 
@@ -167,42 +177,5 @@ public class HttpGetRequest2 extends AsyncTask<String, Void, String> {
         }
         txtTitulo.setText(titulo);
         txtMsg.setText(msg);
-    }
-
-    private void showInformacion(JSONObject json) {
-
-		dialog.findViewById(R.id.lLoading).setVisibility(View.GONE);
-		dialog.findViewById(R.id.lInformacion).setVisibility(View.VISIBLE);
-
-        TextView vinDetalle = dialog.findViewById(R.id.vin_detalle);
-        TextView placaDetalle = dialog.findViewById(R.id.placa_detalle);
-        TextView marcaDetalle = dialog.findViewById(R.id.marca_detalle);
-        TextView modeloDetalle = dialog.findViewById(R.id.modelo_detalle);
-        TextView colorDetalle = dialog.findViewById(R.id.color_detalle);
-        TextView motorDetalle = dialog.findViewById(R.id.motor_detalle);
-        TextView nombreDetalle = dialog.findViewById(R.id.nombre_detalle);
-        TextView noPrestamoDetalle = dialog.findViewById(R.id.no_prestamo_detalle);
-        TextView nombreClienteDetalle = dialog.findViewById(R.id.nombre_cliente_detalle);
-        TextView estadoDetalle = dialog.findViewById(R.id.estado_detalle);
-        TextView diasMoraDetalle = dialog.findViewById(R.id.dias_mora_detalle);
-        TextView montoAdeudadoDetalle = dialog.findViewById(R.id.monto_adeudado_detalle);
-
-        try {
-            vinDetalle.setText(json.getString("vin"));
-            placaDetalle.setText(json.getString("placa"));
-            marcaDetalle.setText(json.getString("marca"));
-            modeloDetalle.setText(json.getString("modelo"));
-            colorDetalle.setText(json.getString("color"));
-            motorDetalle.setText(json.getString("motor"));
-            nombreDetalle.setText(json.getString("financiera"));
-            noPrestamoDetalle.setText(json.getString("no_prestamo"));
-            nombreClienteDetalle.setText(json.getString("cliente"));
-            estadoDetalle.setText(json.getString("estado"));
-            diasMoraDetalle.setText(json.getString("dias_mora"));
-            montoAdeudadoDetalle.setText(json.getString("montoadeudato"));
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
-        dialog.findViewById(R.id.btnAceptar).setVisibility(View.VISIBLE);
     }
 }

@@ -14,13 +14,14 @@ public class HistorialViewModel extends AndroidViewModel {
 
     private HistorialRepository repository;
     private final LiveData<List<Historial>> historialDataset;
+
     public HistorialViewModel(@NonNull Application app) {
         super(app);
-        this.repository=new HistorialRepository(app);
-        this.historialDataset= repository.getDataset();
+        this.repository = new HistorialRepository(app);
+        this.historialDataset = repository.getDataset();
     }
 
-    private HistorialRepository getRepository(){
+    private HistorialRepository getRepository() {
         return repository;
     }
 
@@ -28,20 +29,24 @@ public class HistorialViewModel extends AndroidViewModel {
         return historialDataset;
     }
 
-    public void insert(Historial data){
+    public void insert(Historial data) {
         repository.insert(data);
     }
 
-    public void update(Historial data){
+    public void update(Historial data) {
         repository.update(data);
     }
 
-    public void delete(Historial data){
+    public void delete(Historial data) {
         repository.delete(data);
     }
 
-    public void deleteAll(){
+    public void deleteAll() {
         repository.deleteAll();
+    }
+
+    public boolean placaExists(String placa) {
+        return repository.placaExists(placa);
     }
 
 }
