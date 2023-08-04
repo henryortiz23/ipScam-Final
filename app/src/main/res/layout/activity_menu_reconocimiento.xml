@@ -490,29 +490,6 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="20dp"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_gravity="center"
-                    android:layout_marginEnd="8dp"
-                    android:src="@drawable/icono_app" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Contacto +504: 27820036"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
         </LinearLayout>
 
     </LinearLayout>
